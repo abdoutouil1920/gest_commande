@@ -20,7 +20,15 @@ public class User {
     private String lastName;
     private String phoneNumber;
     private String dateOfBirth;
+    private String token;
 
+    public String getToken() {
+        return token;
+    }
+    
+    public void setToken(String token) {
+        this.token = token;
+    }
 
     public void setFirstName(String firstName) {
         this.firstName = firstName;

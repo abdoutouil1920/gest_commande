@@ -8,6 +8,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.gestcomm.gestcomm.Model.User;
 import com.gestcomm.gestcomm.Repository.UserRepository;
+import com.gestcomm.gestcomm.config.JwtUtil;
 
 @Service
 public class UserService {
@@ -34,12 +35,20 @@ public class UserService {
         if (user.getEmail() == null || user.getMotDePasse() == null || user.getUsername() == null) {
             throw new RuntimeException("Tous les champs doivent être remplis !");
         }
-        // Log the incoming user object for debugging purposes
-        System.out.println("Creating user: " + user.toString());
-        
+    
+        // Encode the password
         user.setMotDePasse(passwordEncoder.encode(user.getMotDePasse()));
-        return userRepository.save(user);
+    
+        // Save the user
+        User savedUser = userRepository.save(user);
+    
+        // Generate the token
+        String token = JwtUtil.generateToken(savedUser.getUsername(), savedUser.getRole());
+        savedUser.setToken(token);
+    
+        return savedUser;
     }
+    
     
     // Connexion
     public User login(String email, String password) {
@@ -82,5 +91,10 @@ public class UserService {
         } else {
             throw new RuntimeException("User not found with id: " + id);
         }
+    }
+    public String generateToken(User user) {
+        // Use a JWT library to create the token (e.g., jjwt, jose, etc.)
+        // For simplicity, assume you already have a JWT utility class
+        return JwtUtil.generateToken(user.getUsername(), user.getRole());
     }
 }

@@ -18,21 +18,39 @@ public class UserController {
 
     // Endpoint pour l'inscription
     @PostMapping("/signup")
-    public User signup(@RequestBody User user) {
-        return userService.signup(user);
+    public ResponseEntity<User> signup(@RequestBody User user) {
+        try {
+            User createdUser = userService.signup(user);
+            return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
     }
 
     // Endpoint pour l'enregistrement
     @PostMapping("/register")
-    public User register(@RequestBody User user) {
-        return userService.createUser(user);
+public ResponseEntity<User> register(@RequestBody User user) {
+    try {
+        User createdUser = userService.createUser(user);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
+    } catch (Exception e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
     }
+}
 
     // Endpoint pour la connexion
     @PostMapping("/login")
-    public User login(@RequestBody User loginRequest) {
-        return userService.login(loginRequest.getEmail(), loginRequest.getMotDePasse());
+    public ResponseEntity<User> login(@RequestBody User loginRequest) {
+        try {
+            User user = userService.login(loginRequest.getEmail(), loginRequest.getMotDePasse());
+            String token = userService.generateToken(user);
+            user.setToken(token); // Add the token to the user object
+            return ResponseEntity.ok(user);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
     }
+    
 
     // Endpoint pour récupérer un utilisateur par ID
     @GetMapping("/{id}")
