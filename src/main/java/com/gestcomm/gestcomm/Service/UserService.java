@@ -22,15 +22,25 @@ public class UserService {
         if (userRepository.findByEmail(user.getEmail()) != null) {
             throw new RuntimeException("Email déjà utilisé !");
         }
+        // Check for missing fields
+        if (user.getEmail() == null || user.getMotDePasse() == null || user.getUsername() == null) {
+            throw new RuntimeException("Tous les champs doivent être remplis !");
+        }
         user.setMotDePasse(passwordEncoder.encode(user.getMotDePasse()));
         return userRepository.save(user);
     }
-
+    
     public User createUser(User user) {
-        // Encoder le mot de passe avant de l'enregistrer
+        if (user.getEmail() == null || user.getMotDePasse() == null || user.getUsername() == null) {
+            throw new RuntimeException("Tous les champs doivent être remplis !");
+        }
+        // Log the incoming user object for debugging purposes
+        System.out.println("Creating user: " + user.toString());
+        
         user.setMotDePasse(passwordEncoder.encode(user.getMotDePasse()));
         return userRepository.save(user);
     }
+    
     // Connexion
     public User login(String email, String password) {
         User user = userRepository.findByEmail(email);
